@@ -1,4 +1,4 @@
-name: CI-pipeline
+name: Build and deploy
 
 on:
   push:
@@ -7,17 +7,16 @@ on:
 env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY: wishifai-31
+  TF_VERSION: 1.17.1
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      -  uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -35,3 +34,33 @@ jobs:
           docker build -t $REGISTRY/$ECR_REPOSITORY:$TAG .
           docker push $REGISTRY/$ECR_REPOSITORY:$TAG
           
+  terraform:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+      - uses: actions/checkout@v4
+
+      
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform format check
+        run: terraform fmt -check
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve -input=false -var="image_tag=${{ github.sha }}"
