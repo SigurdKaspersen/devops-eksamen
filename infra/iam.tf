@@ -21,6 +21,12 @@ data "aws_iam_policy_document" "task_permissions" {
   }
 
   statement {
+    sid       = "CloudWatchMetrics"
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"]
+  }
+
+  statement {
     sid       = "Rekognition"
     actions   = ["rekognition:DetectLabels"]
     resources = ["*"]
