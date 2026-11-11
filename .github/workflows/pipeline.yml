@@ -63,4 +63,6 @@ jobs:
         run: terraform init -input=false
 
       - name: Terraform apply
+        env:
+          TF_VAR_alarm_email: ${{ secrets.EMAIL }}
         run: terraform apply -auto-approve -input=false -var="image_tag=${{ github.sha }}"

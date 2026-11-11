@@ -14,3 +14,7 @@ variable "image_tag" {
   description = "Docker image version (commit SHA)"
   type        = string
 }
+
+variable "alarm_email" {
+  type = string
+}
