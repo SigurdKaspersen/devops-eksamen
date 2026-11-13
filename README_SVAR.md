@@ -52,6 +52,8 @@ ECS: live tasks viser antall tasks ECS har kjørende.
 
 Alarmen er en cloudwatch-alarm som varsler på mail via SNS, der mailen ligger i github-secrets EMAIL . Alarmen overvåker bedrock-kallet, der alarmterskelen ligger på 20 sekunder i 2 minutter på rad, den ble satt på 20 sekunder ettersom gjennomsnittlig svartid er på 14-15 sekunder og det er mest sannsynlig der tjenestens treghet ligger.
 
+![skjermbilde](skjermbilde2.jpg)
+
 ## Oppgave 4 
 AI og DevOps-praksiser
 
